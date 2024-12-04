@@ -1,1 +1,6 @@
 *.dat
+tmp
+tests
+graphs
+build
+input
