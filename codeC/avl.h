@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include "traiter.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -13,17 +14,18 @@
 
 typedef struct _avl
 {
-    int          elmt;
+    Station      station; 
     int          eq;
     struct _avl* fg;
     struct _avl* fd;
 }
 AVL;
 
+Station creerStation();
 AVL* creerAVL(int r);
 int estVide(AVL* a);
 int estFeuille(AVL* a);
-int element(AVL* a);
+int id(AVL* a);
 int existeFilsGauche(AVL* a);
 int existeFilsDroit(AVL* a);
 int ajouterFilsGauche(AVL* a, int e);
