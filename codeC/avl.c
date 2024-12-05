@@ -1,0 +1,326 @@
+#include "avl.h"
+
+AVL* creerAVL(int r)
+{
+    AVL* nouv = (AVL*) malloc(sizeof(AVL)); //allout de la mémoire au noeud
+
+    if (nouv == NULL) //s'il y a une erreur d'allocation de mémoire
+    {
+        exit(1);
+    }
+
+    nouv->elmt = r; //init la valeur du noeud par la valeur donnée
+    nouv->fg = NULL; //init le fils gauche à NULL
+    nouv->fd = NULL; //init le fils droit à NULL
+    nouv->eq = 0; //init l'équilibre du noeud à 0 car il n'a pas d'héritage (feuille)
+
+    return nouv; //retourne le noeud
+}
+
+int estVide(AVL* a)
+{
+    return a == NULL;
+}
+
+int estFeuille(AVL* a)
+{
+    return estVide(a) || estVide(a->fg) && estVide(a->fd);
+}
+
+int element(AVL* a)
+{
+    return estVide(a) ? 0 : a->elmt;
+}
+
+int existeFilsGauche(AVL* a)
+{
+    return !estVide(a) && !estVide(a->fg);
+}
+
+int existeFilsDroit(AVL* a)
+{
+    return !estVide(a) && !estVide(a->fd);
+}
+
+int ajouterFilsGauche(AVL* a, int e)
+{
+    if (estVide(a))
+    {
+        return 0;
+    }
+    a->fg = creerAVL(e);
+    return 1;
+}
+
+int ajouterFilsDroit(AVL* a, int e)
+{
+    if (estVide(a))
+    {
+        return 0;
+    }
+    a->fd = creerAVL(e);
+    return 1;
+}
+
+AVL* rechercheAVL(AVL* a, int elmt)
+{
+    if (a == NULL)
+    {
+        return NULL;
+    }
+    else if (element(a) == elmt)
+    {
+        return a;
+    }
+    else if (elmt < element(a))
+    {
+        return rechercheAVL(a->fg, elmt);
+    }
+    else
+    {
+        return rechercheAVL(a->fd, elmt);
+    }
+}
+
+AVL* afficheInfixe(AVL* a)
+{
+    if (!estVide(a))
+    {
+        afficheInfixe(a->fg);
+        printf("%d\n", element(a));
+        afficheInfixe(a->fd);
+    }
+}
+
+AVL* afficheInfixeEquilibre(AVL* a)
+{
+    if (!estVide(a))
+    {
+        afficheInfixeEquilibre(a->fg);
+        printf("Valeur:%d Equilibre:%d\n", element(a), a->eq);
+        afficheInfixeEquilibre(a->fd);
+    }
+}
+
+
+AVL* affichePrefixeEquilibre(AVL* a)
+{
+    if (!estVide(a))
+    {
+        printf("Valeur:%d Equilibre:%d\n", element(a), a->eq);
+        affichePrefixeEquilibre(a->fg);
+        affichePrefixeEquilibre(a->fd);
+    }
+}
+
+AVL* affichePrefixeEquilibre2(AVL* a)
+{
+    if (!estVide(a))
+    {
+        printf("=Valeur:%d Equilibre:%d\n", element(a), a->eq);
+        affichePrefixeEquilibre2(a->fg);
+        printf("-Valeur:%d Equilibre:%d\n", element(a), a->eq);
+        affichePrefixeEquilibre2(a->fd);
+        printf("\\Valeur:%d Equilibre:%d\n", element(a), a->eq);
+    }
+}
+
+AVL* rotGauche(AVL* a)
+{
+    AVL* pivot = a->fd;
+    int eqa, eqp;
+
+    a->fd = pivot->fg;
+    pivot->fg = a;
+    eqa = a->eq;
+    eqp = pivot->eq;
+
+    a->eq = eqa - max(eqp, 0) - 1;
+    pivot->eq = min3(eqa-2, eqa+eqp-2, eqp-1);
+    a = pivot;
+
+    return a;
+}
+
+AVL* rotDroite(AVL* a)
+{
+    AVL* pivot = a->fg;
+    int eqa, eqp;
+
+    a->fg = pivot->fd;
+    pivot->fd = a;
+    eqa = a->eq;
+    eqp = pivot->eq;
+
+    a->eq = eqa - min(eqp, 0) + 1;
+    pivot->eq = max3(eqa+2, eqa+eqp+2, eqp+1);
+    a = pivot;
+
+    return a;
+}
+
+AVL* doubleRotationGauche(AVL* a)
+{
+    a->fd = rotDroite(a->fd);
+    return rotGauche(a);
+}
+
+AVL* doubleRotationDroite(AVL* a)
+{
+    a->fg = rotGauche(a->fg);
+    return rotDroite(a);
+}
+
+
+AVL* equilibrerAVL(AVL* a)
+{
+    if (a->eq >= 2)
+    {
+        if (a->fd->eq >= 0)
+        {
+            return rotGauche(a);
+        }
+        else
+        {
+            return doubleRotationGauche(a);
+        }
+    }
+    else if (a->eq <= -2)
+    {
+        if (a->fg->eq <= 0)
+        {
+            return rotDroite(a);
+        }
+        else
+        {
+            return doubleRotationDroite(a);
+        }
+    }
+    return a;
+}
+
+
+AVL* insertionAVL(AVL* a, int e, int* h)
+{
+    if (estVide(a))
+    {
+        *h = 1;
+        return creerAVL(e);
+    }
+    else if (e < element(a))
+    {
+        a->fg = insertionAVL(a->fg, e, h);
+        *h = -*h;
+    }
+    else if (e > element(a))
+    {
+        a->fd = insertionAVL(a->fd, e, h);
+    }
+    else
+    {
+        *h = 0;
+        return a;
+    }
+    if (*h != 0)
+    {
+        a->eq = a->eq + *h;
+        a = equilibrerAVL(a);
+        if (a->eq == 0)
+        {
+            *h = 0;
+        }
+        else
+        {
+            *h = 1;
+        }
+    }
+    return a;
+}
+
+
+AVL* suppMinAVL(AVL* a, int* h, int* pe)
+{
+    AVL* temp;
+
+    if (estVide(a->fg))
+    {
+        *pe = element(a);
+        *h = -1;
+        temp = a;
+        a = a->fd;
+        free(temp);
+        return a;
+    }
+    else
+    {
+        a->fg = suppMinAVL(a->fg, h, pe);
+        *h = -*h;
+    }
+    
+    if (*h != 0)
+    {
+        a->eq = a->eq + *h;
+        a = equilibrerAVL(a);
+        if (a->eq == 0)
+        {
+            *h = -1;
+        }
+        else
+        {
+            *h = 0;
+        }
+    }
+    return a;
+}
+
+
+AVL* suppressionAVL(AVL* a, int e, int* h)
+{
+    AVL* temp;
+
+    if (estVide(a))
+    {
+        *h = 0;
+        return a;
+    }
+    if (e > element(a))
+    {
+        a->fd = suppressionAVL(a->fd, e, h);
+    }
+    else if (e < element(a))
+    {
+        a->fg = suppressionAVL(a->fg, e, h);
+        *h = -*h;
+    }
+    else if (existeFilsDroit(a))
+    {
+        a->fd = suppMinAVL(a->fd, h, &(a->elmt));
+    }
+    else
+    {
+        temp = a;
+        a = a->fg;
+        free(temp);
+        *h = -1;
+        return a;
+    }
+    if (estVide(a))
+    {
+        *h = 0;
+        return a;
+    }
+    if (*h != 0)
+    {
+        a->eq = a->eq + *h;
+        a = equilibrerAVL(a);
+        if (a->eq == 0)
+        {
+            *h = -1;
+        }
+        else
+        {
+            *h = 0;
+        }
+    }
+    return a;
+}
