@@ -11,4 +11,6 @@ typedef struct {
 }
 Station;
 
+Station traiter (Station s, int argc, char* argv[]);
+
 #endif

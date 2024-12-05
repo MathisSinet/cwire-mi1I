@@ -1,15 +1,15 @@
 #include "avl.h"
 
-Station creerStation() {
+
+Station creerStation(int id) {
     Station s;
-    s.id = 0;
     s.capacity = 0;
     s.load = 0;
-
+    s.id = id;
     return s;
 }
 
-AVL* creerAVL(int r)
+AVL* creerAVL(int id)
 {
     AVL* nouv = (AVL*) malloc(sizeof(AVL)); 
 
@@ -17,9 +17,8 @@ AVL* creerAVL(int r)
     {
         exit(1);
     }
-    Station* s = malloc(sizeof(Station));
 
-    nouv->station = creerStation();
+    nouv->station = creerStation(id);
     nouv->fg = NULL; 
     nouv->fd = NULL; 
     nouv->eq = 0; 
