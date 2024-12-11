@@ -90,6 +90,7 @@ if [ ! -d graphs ]
 then mkdir graphs
 fi
 
+temps_debut=`date +%s.%N`
 
 # Filtrage des données avec awk et obtention du chemin sortie
 
@@ -133,7 +134,7 @@ then
 
 fi
 
-if (($id_station == -1)) # cas du traitement pourtoutes les stations
+if (($id_station == -1)) # cas du traitement pour toutes les stations
 then
     chemin_sortie="${2}_${3}.csv"
 
@@ -169,12 +170,10 @@ fi
 
 # Exécution du pprogramme
 
-$PROG $chemin_entree $chemin_sortie
+$PROG "tmp/input.csv" "tmp/output.csv"
 
-#if (($id_station == -1)) && (($type_station == 2)) && (($type_conso == 0))
-#then
-#    echo "Bonjour"
-#    $PROG $chemin_entree $chemin_sortie 1
-#else
-#    $PROG $chemin_entree $chemin_sortie 0
-#fi
+
+temps_fin=`date +%s.%N`
+temps_tot=`echo $temps_fin-$temps_debut | bc`
+
+echo "Temps d'exécution : $temps_tot"
