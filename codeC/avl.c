@@ -90,13 +90,13 @@ AVL* rechercheAVL(AVL* a, int elmt)
     }
 }
 
-AVL* afficheInfixe(AVL* a)
+AVL* afficheInfixe(AVL* a, FILE* fichierSortie) 
 {
     if (!estVide(a))
     {
-        afficheInfixe(a->fg);
-        printf("%d %ld %ld \n", a->station.id, a->station.capacity, a->station.load);
-        afficheInfixe(a->fd);
+        afficheInfixe(a->fg, fichierSortie);
+        fprintf(fichierSortie, "%d_%ld_%ld\n", a->station.id, a->station.capacity, a->station.load);
+        afficheInfixe(a->fd, fichierSortie);
     }
 }
 

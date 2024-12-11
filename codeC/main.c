@@ -2,7 +2,8 @@
 #include "avl.h"
 
 int main (int argc, char* argv[]) {
-    FILE* file = fopen(argv[1], "r");
+    FILE* fichierEntree = fopen(argv[1], "r");
+    FILE* fichierSortie = fopen(argv[2], "w");
     Station s;
     AVL* a = NULL;
     int h;
@@ -10,13 +11,14 @@ int main (int argc, char* argv[]) {
     long load = 0;
     int id = 0;
 
-    while (!feof(file)) {
-        fscanf(file, "%d %ld %ld", &id, &capacity, &load);
+    while (!feof(fichierEntree)) {
+        fscanf(fichierEntree, "%d %ld %ld", &id, &capacity, &load);
         a = insertionAVL(a, id, capacity, load, &h); 
     }
-    afficheInfixe(a);
+    afficheInfixe(a, fichierSortie);
 
-    fclose(file);
+    fclose(fichierEntree);
+    fclose(fichierSortie);
 
     return 0;
 }

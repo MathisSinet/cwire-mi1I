@@ -31,7 +31,7 @@ int existeFilsDroit(AVL* a);
 int ajouterFilsGauche(AVL* a, int e);
 int ajouterFilsDroit(AVL* a, int e);
 AVL* rechercheAVL(AVL* a, int elmt);
-AVL* afficheInfixe(AVL* a);
+AVL* afficheInfixe(AVL* a, FILE* fichierSortie);
 AVL* afficheInfixeEquilibre(AVL* a);
 AVL* rotGauche(AVL* a);
 AVL* rotDroite(AVL* a);
