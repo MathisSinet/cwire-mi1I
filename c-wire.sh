@@ -172,6 +172,10 @@ fi
 
 $PROG "tmp/input.csv" "tmp/output.csv"
 
+# Tri des données
+
+sort "tmp/output.csv" -k2 -t: -n -o $chemin_sortie
+# minmax
 
 temps_fin=`date +%s.%N`
 temps_tot=`echo $temps_fin-$temps_debut | bc`
