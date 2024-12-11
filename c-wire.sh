@@ -54,7 +54,13 @@ esac
 # Vérification de l'argument 3 "type de consommateur"
 type_conso=-1
 case $3 in
-    'all') type_conso=0 ;;
+    'all') type_conso=0
+    if (($type_station != 2))
+    then
+        echo "Erreur : Impossible d'utiliser l'option 'all' avec une station $2"
+        erreur 5
+    fi
+    ;;
     'comp') type_conso=1 ;;
     'indiv') type_conso=2
     if (($type_station != 2))
@@ -97,6 +103,7 @@ temps_debut=`date +%s.%N`
 col=$(($type_station+2)) # colonne du fichier csv
 prog_awk=""
 chemin_sortie=""
+nblignes=0
 
 if (($id_station != -1)) # cas du traitement pour une station spécifique
 then
@@ -104,7 +111,7 @@ then
 
     if (($type_station <= 1)) # hvb ou hva
     then
-        prog_awk='NR>1 && NF=8 { if ($'"$col==$id_station"') print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+        prog_awk='NR>1 && NF=8 { if ($'"$col==$id_station"' && $'$(($col+1))'=="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
     else # lv
         case $3 in
             'all')
@@ -125,8 +132,8 @@ then
         echo "Erreur awk"
         erreur 10
     fi
-    _lc=`wc -l tmp/input.csv | cut -f1 -d' '`
-    if (($_lc == 0)); then
+    nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+    if (($nblignes == 0)); then
         echo "Aucune entrée ne correspond aux critères sélectionnés"
         echo "Traitement pour toutes les stations"
         id_station=-1
@@ -140,7 +147,7 @@ then
 
     if (($type_station <= 1)) # hvb ou hva
     then
-        prog_awk='NR>1 && NF=8 { if ($'$col'!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+        prog_awk='NR>1 && NF=8 { if ($'$col'!="-" && $'$(($col+1))'=="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
     else # lv
         case $3 in
             'all')
@@ -161,8 +168,8 @@ then
         echo "Erreur awk"
         erreur 10
     fi
-    _lc=`wc -l tmp/input.csv | cut -f1 -d' '`
-    if (($_lc == 0)); then
+    nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+    if (($nblignes == 0)); then
         echo "Aucune entrée ne correspond aux critères sélectionnés"
         erreur 11
     fi
@@ -170,7 +177,7 @@ fi
 
 # Exécution du pprogramme
 
-$PROG "tmp/input.csv" "tmp/output.csv"
+$PROG "tmp/input.csv" "tmp/output.csv" $nblignes
 
 # Tri des données
 
