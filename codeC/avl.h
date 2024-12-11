@@ -38,7 +38,7 @@ AVL* rotDroite(AVL* a);
 AVL* doubleRotationGauche(AVL* a);
 AVL* doubleRotationDroite(AVL* a);
 AVL* equilibrerAVL(AVL* a);
-AVL* insertionAVL(AVL* a, int e, int* h);
+AVL* insertionAVL(AVL* a, int e, long capacity, long load, int* h);
 AVL* suppMinAVL(AVL* a, int* h, int* pe);
 AVL* suppressionAVL(AVL* a, int e, int* h);
 

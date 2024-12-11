@@ -1,6 +1,5 @@
 #include "avl.h"
 
-
 Station creerStation(int id) {
     Station s;
     s.capacity = 0;
@@ -96,7 +95,7 @@ AVL* afficheInfixe(AVL* a)
     if (!estVide(a))
     {
         afficheInfixe(a->fg);
-        printf("%d\n", id(a));
+        printf("%d %ld %ld \n", a->station.id, a->station.capacity, a->station.load);
         afficheInfixe(a->fd);
     }
 }
@@ -209,25 +208,30 @@ AVL* equilibrerAVL(AVL* a)
 }
 
 
-AVL* insertionAVL(AVL* a, int e, int* h)
+AVL* insertionAVL(AVL* a, int e, long capacity, long load, int* h)
 {
     if (estVide(a))
     {
         *h = 1;
-        return creerAVL(e);
+        a = creerAVL(e);        
+        a->station.capacity += capacity;
+        a->station.load += load;
+        return a;
     }
     else if (e < id(a))
     {
-        a->fg = insertionAVL(a->fg, e, h);
+        a->fg = insertionAVL(a->fg, e, capacity, load, h);
         *h = -*h;
     }
     else if (e > id(a))
     {
-        a->fd = insertionAVL(a->fd, e, h);
+        a->fd = insertionAVL(a->fd, e, capacity, load, h);
     }
-    else
+    else if (e == id(a))
     {
         *h = 0;
+        a->station.capacity += capacity;
+        a->station.load += load;
         return a;
     }
     if (*h != 0)
