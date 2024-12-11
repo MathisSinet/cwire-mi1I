@@ -19,6 +19,6 @@ int main (int argc, char* argv[]) {
 
     fclose(fichierEntree);
     fclose(fichierSortie);
-
+    
     return 0;
 }
