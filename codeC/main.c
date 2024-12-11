@@ -1,11 +1,8 @@
 #include "avl.h"
+#include "traiter.h"
 
-int main () {
-    AVL* a = NULL;
-    int h;
-    a = insertionAVL(a, 5, &h);
-    afficheInfixe(a);
-    afficheInfixeEquilibre(a);
-
+int main (int argc, char* argv[]) {
+    Station s;
+    traiter(s, argc, argv);
     return 0;
 }
