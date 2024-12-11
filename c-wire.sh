@@ -169,10 +169,12 @@ fi
 
 # Exécution du pprogramme
 
-if (($id_station == -1)) && (($type_station == 2)) && (($type_conso == 0))
-then
-    echo "Bonjour"
-    $PROG $chemin_entree $chemin_sortie 1
-else
-    $PROG $chemin_entree $chemin_sortie 0
-fi
+$PROG $chemin_entree $chemin_sortie
+
+#if (($id_station == -1)) && (($type_station == 2)) && (($type_conso == 0))
+#then
+#    echo "Bonjour"
+#    $PROG $chemin_entree $chemin_sortie 1
+#else
+#    $PROG $chemin_entree $chemin_sortie 0
+#fi
