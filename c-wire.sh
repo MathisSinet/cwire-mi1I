@@ -153,13 +153,19 @@ then
     else # lv
         case $3 in
             'all')
-                regex='NR>1 && NF=8 { if ($'$col'!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex="^[^;]+;[^;]+;[^;]+;[0-9]+"
+                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
-                regex='NR>1 && NF=8 { if ($'$col'!="-" && $5!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex="^[^;]+;[^;]+;[^;]+;[0-9]+;[^;]+;-"
+                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'indiv')
-                regex='NR>1 && NF=8 { if ($'$col'!="-" && $6!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex="^[^;]+;[^;]+;[^;]+;[0-9]+;-;[^;]+"
+                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
         esac
     fi
@@ -167,7 +173,7 @@ fi
 
 # Exécution du pprogramme
 
-$PROG 0 0 $nblignes < tmp/input.csv > tmp/output.csv
+$PROG $nblignes < tmp/input.csv > tmp/output.csv
 
 # Tri des données
 
