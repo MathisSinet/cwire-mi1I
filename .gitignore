@@ -6,4 +6,5 @@ build
 input
 codeC/prog
 .vscode
+*.o
 *.csv

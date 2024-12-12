@@ -5,12 +5,18 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "traiter.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min3(a,b,c) (min(min(a,b),c))
 #define max3(a,b,c) (max(max(a,b),c))
+
+typedef struct {
+    int id; 
+    long capacity;
+    long load;
+}
+Station;
 
 typedef struct _avl
 {

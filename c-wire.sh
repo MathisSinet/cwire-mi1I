@@ -82,7 +82,12 @@ then id_station=$4
 fi
 
 # Vérifier compliation
-
+if [ ! -f $PROG ]
+then
+    cd codeC
+    make
+    cd ..
+fi
 
 # Vérification du dossier tmp
 if [ -d tmp ]
@@ -100,7 +105,7 @@ temps_debut=`date +%s.%N`
 # Filtrage des données avec awk et obtention du chemin sortie
 
 col=$(($type_station+2)) # colonne du fichier csv
-prog_awk=""
+regex=""
 chemin_sortie=""
 nblignes=0
 
@@ -110,77 +115,63 @@ then
 
     if (($type_station <= 1)) # hvb ou hva
     then
-        prog_awk='NR>1 && NF=8 { if ($'"$col==$id_station"' && $'$(($col+1))'=="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+        regex='NR>1 && NF=8 { if ($'"$col==$id_station"' && $'$(($col+1))'=="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
     else # lv
         case $3 in
             'all')
-                prog_awk='NR>1 && NF=8 { if ($'"$col==$id_station"') print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex='NR>1 && NF=8 { if ($'"$col==$id_station"') print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
                 ;;
             'comp')
-                prog_awk='NR>1 && NF=8 { if ($'"$col==$id_station"' && $5!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex='NR>1 && NF=8 { if ($'"$col==$id_station"' && $5!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
                 ;;
             'indiv')
-                prog_awk='NR>1 && NF=8 { if ($'"$col==$id_station"' && $6!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex='NR>1 && NF=8 { if ($'"$col==$id_station"' && $6!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
                 ;;
         esac
     fi
 
     awk "$prog_awk" FS=';' OFS=' ' $chemin_entree > tmp/input.csv
-
-    if (($? != 0)); then
-        echo "Erreur awk"
-        erreur 10
-    fi
-    nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
-    if (($nblignes == 0)); then
-        echo "Aucune entrée ne correspond aux critères sélectionnés"
-        echo "Traitement pour toutes les stations"
-        id_station=-1
-    fi
-
 fi
 
 if (($id_station == -1)) # cas du traitement pour toutes les stations
 then
     chemin_sortie="${2}_${3}.csv"
 
-    if (($type_station <= 1)) # hvb ou hva
+    if (($type_station == 0)) # hvb ou hva
     then
-        prog_awk='NR>1 && NF=8 { if ($'$col'!="-" && $'$(($col+1))'=="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+        regex="^[^;]+;[0-9]+;-"
+        grep -E "$regex" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
+        nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+        temps_fin=`date +%s.%N`
+        temps_tot=`echo $temps_fin-$temps_debut | bc`
+        echo "Temps d'exécution : $temps_tot"
+    elif (($type_station == 1))
+    then
+        regex="^[^;]+;[^;]+;[0-9]+;-"
+        grep -E "$regex" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
+        nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     else # lv
         case $3 in
             'all')
-                prog_awk='NR>1 && NF=8 { if ($'$col'!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex='NR>1 && NF=8 { if ($'$col'!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
                 ;;
             'comp')
-                prog_awk='NR>1 && NF=8 { if ($'$col'!="-" && $5!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex='NR>1 && NF=8 { if ($'$col'!="-" && $5!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
                 ;;
             'indiv')
-                prog_awk='NR>1 && NF=8 { if ($'$col'!="-" && $6!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex='NR>1 && NF=8 { if ($'$col'!="-" && $6!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
                 ;;
         esac
-    fi
-
-    awk "$prog_awk" FS=';' OFS=' ' $chemin_entree > tmp/input.csv
-
-    if (($? != 0)); then
-        echo "Erreur awk"
-        erreur 10
-    fi
-    nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
-    if (($nblignes == 0)); then
-        echo "Aucune entrée ne correspond aux critères sélectionnés"
-        erreur 11
     fi
 fi
 
 # Exécution du pprogramme
 
-$PROG "tmp/input.csv" "tmp/output.csv" $nblignes
+$PROG 0 0 $nblignes < tmp/input.csv > tmp/output.csv
 
 # Tri des données
 
-sort "tmp/output.csv" -k2 -t: -n -o $chemin_sortie
+sort "tmp/output.csv" -k2 -t_ -n -o $chemin_sortie
 # minmax
 
 temps_fin=`date +%s.%N`
