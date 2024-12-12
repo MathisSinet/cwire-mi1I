@@ -150,29 +150,30 @@ then
 
     if (($type_station == 0)) # hvb ou hva
     then
-        regex="^[^;]+;[0-9]+;-"
-        grep -E "$regex" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
+        cat < $chemin_entree | grep -E "^[0-9-]+;[0-9]+;-;-;" | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     elif (($type_station == 1))
     then
-        regex="^[^;]+;[^;]+;[0-9]+;-"
-        grep -E "$regex" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
+        cat < $chemin_entree | grep -E "^[0-9-]+;[0-9-]+;[0-9]+;-" | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     else # lv
         case $3 in
             'all')
-                regex="^[^;]+;[^;]+;[^;]+;[0-9]+"
-                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                time cat < $chemin_entree | grep -E "^[0-9]+;-;[0-9-]+;[0-9-]+;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                time cat < $chemin_entree | grep -E "^[0-9]+;-;[0-9]+;[0-9]+;-;-;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                time cat < $chemin_entree | grep -E "^[0-9]+;-;-;[0-9]+" | cut -d';' -f4,7,8 | tr '-' '0' >> tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
-                regex="^[^;]+;[^;]+;[^;]+;[0-9]+;[^;]+;-"
-                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                regex="^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;"
+                cat < $chemin_entree | grep -E "$regex" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'indiv')
-                regex="^[^;]+;[^;]+;[^;]+;[0-9]+;-;[^;]+"
-                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                #cat < $chemin_entree | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                cat < $chemin_entree | grep -E "^[0-9-]+;-;[0-9]+;[0-9]+;-;-;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                cat < $chemin_entree | grep -E "^[0-9-]+;-;-;[0-9]+;-;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                #cat < $chemin_entree | { grep -E "^[0-9-]+;-;[0-9]+;[0-9]+;-;-;" ; grep -E "^[0-9-]+;-;-;[0-9]+;-;" ; } | cut -d';' -f4,7,8 | tr '-' '0' >> tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
         esac
@@ -181,14 +182,33 @@ fi
 
 # Exécution du pprogramme
 
+temps_fin=`date +%s.%N`
+temps_tot=`echo $temps_fin-$temps_debut | bc`
+
+echo "Temps d'exécution : $temps_tot"
+
 $PROG $nblignes < tmp/input.csv > tmp/output.csv
+
+temps_fin=`date +%s.%N`
+temps_tot=`echo $temps_fin-$temps_debut | bc`
+
+echo "Temps d'exécution : $temps_tot"
 
 # Tri des données
 
 cut -d_ -f1,2,3 "tmp/output.csv" | sort -k2 -t_ -n -o $chemin_sortie
-if (($type_conso == 0) && ($id_station == -1) && ($nblignes >= 20))
+if (($type_conso == 0)) && (($id_station == -1))
 then
-    
+    if (($nblignes >= 20)); then
+        #sort "tmp/output.csv" -k4 -t_ -n > tmp/output2.csv
+        #head tmp/output2.csv -n10 > tmp/output3.csv
+        #tail tmp/output2.csv -n10 >> tmp/output3.csv
+        #cut tmp/output3.csv -d_ -f1,2,3 > "lv_all_minmax.csv"
+
+        sort "tmp/output.csv" -k4 -t_ -n | tee | { head -n10 ; tail -n10 ; } | cut -d_ -f1,2,3 > "lv_all_minmax.csv"
+    else
+        sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > "lv_all_minmax.csv"
+    fi
 fi
 
 temps_fin=`date +%s.%N`
