@@ -4,6 +4,7 @@
 int main (int argc, char* argv[]) {
     FILE* fichierEntree = fopen(argv[1], "r");
     FILE* fichierSortie = fopen(argv[2], "w");
+    int nbLignes = atoi(argv[3]);
     Station s;
     AVL* a = NULL;
     int h;
@@ -11,7 +12,7 @@ int main (int argc, char* argv[]) {
     long load = 0;
     int id = 0;
 
-    while (!feof(fichierEntree)) {
+    for (int i=0; i<nbLignes; i++) {
         fscanf(fichierEntree, "%d %ld %ld", &id, &capacity, &load);
         a = insertionAVL(a, id, capacity, load, &h); 
     }

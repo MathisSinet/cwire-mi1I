@@ -71,7 +71,6 @@ case $3 in
     ;;
     *)
         echo "Type de consommateur inconnu '$3'"
-        echo "Erreur : Utilisez c-wire.sh -h pour obtenir de l'aide"
         erreur 6
         ;;
 esac
