@@ -113,24 +113,35 @@ if (($id_station != -1)) # cas du traitement pour une station spécifique
 then
     chemin_sortie="${2}_${3}_${4}.csv"
 
-    if (($type_station <= 1)) # hvb ou hva
+    if (($type_station == 0)) # hvb ou hva
     then
-        regex='NR>1 && NF=8 { if ($'"$col==$id_station"' && $'$(($col+1))'=="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+        regex="^[^;]+;$4;-"
+        grep -E "$regex" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
+        nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+    elif (($type_station == 1))
+    then
+        regex="^[^;]+;[^;]+;$4;-"
+        grep -E "$regex" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
+        nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     else # lv
         case $3 in
             'all')
-                regex='NR>1 && NF=8 { if ($'"$col==$id_station"') print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex="^[^;]+;[^;]+;[^;]+;$4"
+                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
-                regex='NR>1 && NF=8 { if ($'"$col==$id_station"' && $5!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex="^[^;]+;[^;]+;[^;]+;$4;[^;]+;-"
+                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'indiv')
-                regex='NR>1 && NF=8 { if ($'"$col==$id_station"' && $6!="-") print $'$col',($7=="-"?0:$7),($8=="-"?0:$8)}'
+                regex="^[^;]+;[^;]+;[^;]+;$4;-;[^;]+"
+                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
         esac
     fi
-
-    awk "$prog_awk" FS=';' OFS=' ' $chemin_entree > tmp/input.csv
 fi
 
 if (($id_station == -1)) # cas du traitement pour toutes les stations
@@ -142,9 +153,6 @@ then
         regex="^[^;]+;[0-9]+;-"
         grep -E "$regex" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
-        temps_fin=`date +%s.%N`
-        temps_tot=`echo $temps_fin-$temps_debut | bc`
-        echo "Temps d'exécution : $temps_tot"
     elif (($type_station == 1))
     then
         regex="^[^;]+;[^;]+;[0-9]+;-"
@@ -177,8 +185,11 @@ $PROG $nblignes < tmp/input.csv > tmp/output.csv
 
 # Tri des données
 
-sort "tmp/output.csv" -k2 -t_ -n -o $chemin_sortie
-# minmax
+cut -d_ -f1,2,3 "tmp/output.csv" | sort -k2 -t_ -n -o $chemin_sortie
+if (($type_conso == 0) && ($id_station == -1) && ($nblignes >= 20))
+then
+    
+fi
 
 temps_fin=`date +%s.%N`
 temps_tot=`echo $temps_fin-$temps_debut | bc`

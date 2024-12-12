@@ -90,46 +90,13 @@ AVL* rechercheAVL(AVL* a, int elmt)
     }
 }
 
-AVL* afficheInfixe(AVL* a, FILE* fichierSortie) 
+AVL* exporter(AVL* a, FILE* fichierSortie) 
 {
     if (!estVide(a))
     {
-        afficheInfixe(a->fg, fichierSortie);
-        fprintf(fichierSortie, "%d_%ld_%ld\n", a->station.id, a->station.capacity, a->station.load);
-        afficheInfixe(a->fd, fichierSortie);
-    }
-}
-
-AVL* afficheInfixeEquilibre(AVL* a)
-{
-    if (!estVide(a))
-    {
-        afficheInfixeEquilibre(a->fg);
-        printf("Valeur:%d Equilibre:%d\n", id(a), a->eq);
-        afficheInfixeEquilibre(a->fd);
-    }
-}
-
-
-AVL* affichePrefixeEquilibre(AVL* a)
-{
-    if (!estVide(a))
-    {
-        printf("Valeur:%d Equilibre:%d\n", id(a), a->eq);
-        affichePrefixeEquilibre(a->fg);
-        affichePrefixeEquilibre(a->fd);
-    }
-}
-
-AVL* affichePrefixeEquilibre2(AVL* a)
-{
-    if (!estVide(a))
-    {
-        printf("=Valeur:%d Equilibre:%d\n", id(a), a->eq);
-        affichePrefixeEquilibre2(a->fg);
-        printf("-Valeur:%d Equilibre:%d\n", id(a), a->eq);
-        affichePrefixeEquilibre2(a->fd);
-        printf("\\Valeur:%d Equilibre:%d\n", id(a), a->eq);
+        exporter(a->fg, fichierSortie);
+        fprintf(fichierSortie, "%d_%ld_%ld_%ld\n", a->station.id, a->station.capacity, a->station.load, abs(a->station.capacity-a->station.load));
+        exporter(a->fd, fichierSortie);
     }
 }
 

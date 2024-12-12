@@ -15,7 +15,7 @@ int main (int argc, char* argv[]) {
         fscanf(fichierEntree, "%d;%ld;%ld", &id, &capacity, &load);
         a = insertionAVL(a, id, capacity, load, &h); 
     }
-    afficheInfixe(a, fichierSortie);
+    exporter(a, fichierSortie);
     
     return 0;
 }

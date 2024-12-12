@@ -10,6 +10,7 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min3(a,b,c) (min(min(a,b),c))
 #define max3(a,b,c) (max(max(a,b),c))
+#define abs(a) ((a) < 0 ? (-a) : (a))
 
 typedef struct {
     int id; 
@@ -37,8 +38,7 @@ int existeFilsDroit(AVL* a);
 int ajouterFilsGauche(AVL* a, int e);
 int ajouterFilsDroit(AVL* a, int e);
 AVL* rechercheAVL(AVL* a, int elmt);
-AVL* afficheInfixe(AVL* a, FILE* fichierSortie);
-AVL* afficheInfixeEquilibre(AVL* a);
+AVL* exporter(AVL* a, FILE* fichierSortie);
 AVL* rotGauche(AVL* a);
 AVL* rotDroite(AVL* a);
 AVL* doubleRotationGauche(AVL* a);
