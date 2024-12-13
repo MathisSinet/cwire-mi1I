@@ -129,18 +129,15 @@ then
     else # lv
         case $3 in
             'all')
-                regex="^[^;]+;[^;]+;[^;]+;$4"
-                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;$4" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
-                regex="^[^;]+;[^;]+;[^;]+;$4;[^;]+;-"
-                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;$4;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'indiv')
-                regex="^[^;]+;[^;]+;[^;]+;$4;-;[^;]+"
-                grep -E "$regex" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;$4;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
         esac
@@ -196,15 +193,11 @@ echo "Temps d'exécution : $temps_tot"
 cut -d_ -f1,2,3 "tmp/output.csv" | sort -k2 -t_ -n -o $chemin_sortie
 if (($type_conso == 0)) && (($id_station == -1))
 then
-    if (($nblignes >= 20)); then
-        #sort "tmp/output.csv" -k4 -t_ -n > tmp/output2.csv
-        #head tmp/output2.csv -n10 > tmp/output3.csv
-        #tail tmp/output2.csv -n10 >> tmp/output3.csv
-        #cut tmp/output3.csv -d_ -f1,2,3 > "lv_all_minmax.csv"
-
-        sort "tmp/output.csv" -k4 -t_ -n | tee | { head -n10 ; tail -n10 ; } | cut -d_ -f1,2,3 > "lv_all_minmax.csv"
+    if (($nblignes >= 20))
+    then
+        sort "tmp/output.csv" -k4 -t_ -n | tee | { head -n10 ; tail -n10 ; } | cut -d_ -f1,2,3 > "tests/lv_all_minmax.csv"
     else
-        sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > "lv_all_minmax.csv"
+        sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > "tests/lv_all_minmax.csv"
     fi
 fi
 
