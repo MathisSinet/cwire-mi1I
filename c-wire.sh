@@ -129,7 +129,7 @@ then
     else # lv
         case $3 in
             'all')
-                grep -E "^[0-9]+;-;[0-9-]+;$4" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;$4;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
@@ -150,24 +150,24 @@ then
 
     if (($type_station == 0)) # hvb
     then
-        grep -E "^[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' | cat > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     elif (($type_station == 1)) # hva
     then
-        grep -E "^[0-9-]+;[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^[0-9-]+;[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' | cat > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     else # lv
         case $3 in
             'all')
-                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;[0-9]" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' | cat > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
-                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' | cat > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'indiv')
-                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' | cat > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
         esac
@@ -181,7 +181,7 @@ temps_tot=`echo $temps_fin-$temps_debut | bc`
 
 echo "Temps d'exécution : $temps_tot"
 
-$PROG $nblignes < tmp/input.csv > tmp/output.csv
+$PROG $nblignes < tmp/input.csv | cat > tmp/output.csv
 
 temps_fin=`date +%s.%N`
 temps_tot=`echo $temps_fin-$temps_debut | bc`
