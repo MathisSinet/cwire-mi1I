@@ -100,6 +100,11 @@ if [ ! -d graphs ]
 then mkdir graphs
 fi
 
+# Vérification du dossier graphs
+if [ ! -d tests ]
+then mkdir tests
+fi
+
 temps_debut=`date +%s.%N`
 
 # Filtrage des données avec awk et obtention du chemin sortie
@@ -111,17 +116,15 @@ nblignes=0
 
 if (($id_station != -1)) # cas du traitement pour une station spécifique
 then
-    chemin_sortie="${2}_${3}_${4}.csv"
+    chemin_sortie="tests/${2}_${3}_${4}.csv"
 
-    if (($type_station == 0)) # hvb ou hva
+    if (($type_station == 0)) # hvb
     then
-        regex="^[^;]+;$4;-"
-        grep -E "$regex" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^[0-9-]+;$4;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     elif (($type_station == 1))
     then
-        regex="^[^;]+;[^;]+;$4;-"
-        grep -E "$regex" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^[0-9-]+;[0-9-]+;$4;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     else # lv
         case $3 in
@@ -146,34 +149,28 @@ fi
 
 if (($id_station == -1)) # cas du traitement pour toutes les stations
 then
-    chemin_sortie="${2}_${3}.csv"
+    chemin_sortie="tests/${2}_${3}.csv"
 
-    if (($type_station == 0)) # hvb ou hva
+    if (($type_station == 0)) # hvb
     then
-        cat < $chemin_entree | grep -E "^[0-9-]+;[0-9]+;-;-;" | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
-    elif (($type_station == 1))
+    elif (($type_station == 1)) # hva
     then
-        cat < $chemin_entree | grep -E "^[0-9-]+;[0-9-]+;[0-9]+;-" | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^[0-9-]+;[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     else # lv
         case $3 in
             'all')
-                time cat < $chemin_entree | grep -E "^[0-9]+;-;[0-9-]+;[0-9-]+;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
-                time cat < $chemin_entree | grep -E "^[0-9]+;-;[0-9]+;[0-9]+;-;-;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
-                time cat < $chemin_entree | grep -E "^[0-9]+;-;-;[0-9]+" | cut -d';' -f4,7,8 | tr '-' '0' >> tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
-                regex="^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;"
-                cat < $chemin_entree | grep -E "$regex" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'indiv')
-                #cat < $chemin_entree | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
-                cat < $chemin_entree | grep -E "^[0-9-]+;-;[0-9]+;[0-9]+;-;-;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
-                cat < $chemin_entree | grep -E "^[0-9-]+;-;-;[0-9]+;-;" | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
-                #cat < $chemin_entree | { grep -E "^[0-9-]+;-;[0-9]+;[0-9]+;-;-;" ; grep -E "^[0-9-]+;-;-;[0-9]+;-;" ; } | cut -d';' -f4,7,8 | tr '-' '0' >> tmp/input.csv
+                grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
         esac

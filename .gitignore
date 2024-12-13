@@ -8,3 +8,4 @@ codeC/prog
 .vscode
 *.o
 *.csv
+*test*
