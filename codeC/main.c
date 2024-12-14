@@ -16,6 +16,7 @@ int main (int argc, char* argv[]) {
         a = insertionAVL(a, id, capacity, load, &h); 
     }
     exporter(a, fichierSortie);
+    a = vide_AVL(a);
     
     return 0;
 }

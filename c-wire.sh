@@ -5,8 +5,7 @@ PROG="codeC/prog"
 # Fonction d'erreur
 erreur()
 {
-    ./help.sh
-    echo "Temps : 0.00 secondes"
+    cat help.txt
     exit $1
 }
 
@@ -15,7 +14,7 @@ for arg in $@
 do
     if [ $arg = '-h' ]
     then
-        ./help.sh
+        cat help.txt
         exit 0
     fi
 done
@@ -75,10 +74,10 @@ case $3 in
         ;;
 esac
 
-# Vérification de l'argument 4 "identifiant de station"
-id_station=-1
+# Vérification de l'argument 4 "identifiant de centrale"
+id_centrale=-1
 if (($# >= 4))
-then id_station=$4
+then id_centrale=$4
 fi
 
 # Vérifier compliation
@@ -109,44 +108,45 @@ temps_debut=`date +%s.%N`
 
 # Filtrage des données avec awk et obtention du chemin sortie
 
-col=$(($type_station+2)) # colonne du fichier csv
-regex=""
 chemin_sortie=""
+chemin_sortie_minmax=""
 nblignes=0
 
-if (($id_station != -1)) # cas du traitement pour une station spécifique
+if (($id_centrale != -1)) # cas du traitement pour une centrale spécifique
 then
     chemin_sortie="tests/${2}_${3}_${4}.csv"
+    chemin_sortie_minmax="tests/lv_all_minmax_${4}.csv"
 
     if (($type_station == 0)) # hvb
     then
-        grep -E "^[0-9-]+;$4;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^$4;[0-9]+;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
-    elif (($type_station == 1))
+    elif (($type_station == 1)) # hva
     then
-        grep -E "^[0-9-]+;[0-9-]+;$4;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
+        grep -E "^$4;[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
     else # lv
         case $3 in
             'all')
-                grep -E "^[0-9]+;-;[0-9-]+;$4;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^$4;-;[0-9-]+;[0-9]+;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'comp')
-                grep -E "^[0-9]+;-;[0-9-]+;$4;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^$4;-;[0-9-]+;[0-9]+;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
             'indiv')
-                grep -E "^[0-9]+;-;[0-9-]+;$4;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
+                grep -E "^$4;-;[0-9-]+;[0-9]+;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
                 ;;
         esac
     fi
 fi
 
-if (($id_station == -1)) # cas du traitement pour toutes les stations
+if (($id_centrale == -1)) # cas du traitement pour toutes les stations
 then
     chemin_sortie="tests/${2}_${3}.csv"
+    chemin_sortie_minmax="tests/lv_all_minmax.csv"
 
     if (($type_station == 0)) # hvb
     then
@@ -191,13 +191,13 @@ echo "Temps d'exécution : $temps_tot"
 # Tri des données
 
 cut -d_ -f1,2,3 "tmp/output.csv" | sort -k2 -t_ -n -o $chemin_sortie
-if (($type_conso == 0)) && (($id_station == -1))
+if (($type_conso == 0))
 then
     if (($nblignes >= 20))
     then
-        sort "tmp/output.csv" -k4 -t_ -n | tee | { head -n10 ; tail -n10 ; } | cut -d_ -f1,2,3 > "tests/lv_all_minmax.csv"
+        sort "tmp/output.csv" -k4 -t_ -n | tee | { head -n10 ; tail -n10 ; } | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     else
-        sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > "tests/lv_all_minmax.csv"
+        sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     fi
 fi
 

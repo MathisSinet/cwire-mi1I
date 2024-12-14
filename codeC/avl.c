@@ -218,6 +218,22 @@ AVL* insertionAVL(AVL* a, int e, long capacity, long load, int* h)
 }
 
 
+AVL* vide_AVL(AVL* a)
+{
+    if (a != NULL)
+    {
+        a->fg = vide_AVL(a->fg);
+        a->fd = vide_AVL(a->fd);
+        free(a);
+        return NULL;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+
 // AVL* suppMinAVL(AVL* a, int* h, int* pe)
 // {
 //     AVL* temp;
