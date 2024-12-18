@@ -85,6 +85,10 @@ if [ ! -f $PROG ]
 then
     cd codeC
     make
+    if (($? != 0)); then
+        echo "Erreur de compliation du programme"
+        erreur 7
+    fi
     cd ..
 fi
 
@@ -176,17 +180,22 @@ fi
 
 # Exécution du pprogramme
 
-temps_fin=`date +%s.%N`
-temps_tot=`echo $temps_fin-$temps_debut | bc`
+#temps_fin=`date +%s.%N`
+#temps_tot=`echo $temps_fin-$temps_debut | bc`
 
-echo "Temps d'exécution : $temps_tot"
+#echo "Temps d'exécution : $temps_tot"
 
 $PROG $nblignes < tmp/input.csv | cat > tmp/output.csv
 
-temps_fin=`date +%s.%N`
-temps_tot=`echo $temps_fin-$temps_debut | bc`
+if (($? != 0)); then
+    echo "Erreur lors de l'exécution du programme C : erreur $?"
+    erreur 15
+fi
 
-echo "Temps d'exécution : $temps_tot"
+#temps_fin=`date +%s.%N`
+#temps_tot=`echo $temps_fin-$temps_debut | bc`
+
+#echo "Temps d'exécution : $temps_tot"
 
 # Tri des données
 

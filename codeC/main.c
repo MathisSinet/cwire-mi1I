@@ -3,7 +3,14 @@
 int main (int argc, char* argv[]) {
     FILE* fichierEntree = stdin;
     FILE* fichierSortie = stdout;
+
     int nbLignes = atoi(argv[1]);
+    if (nbLignes <= 0)
+    {
+        printf("Nombre de lignes du fichier d'entree incorrect\n");
+        exit(1);
+    }
+
     Station s;
     AVL* a = NULL;
     int h;
