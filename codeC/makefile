@@ -7,7 +7,7 @@ CC = gcc
 
 CPARAM = -Wall
 
-# Source list
+# Listes des sources
 
 SRC = $(wildcard $(DIR)/*.c)
 HEADERS = $(wildcard $(DIR)/*.h)
@@ -18,10 +18,10 @@ OBJ = $(patsubst $(DIR)/%.c,$(BUILD)/%.o,$(SRC))
 all: $(EXEC)
 
 $(BUILD)/%.o: $(DIR)/%.c $(HEADERS)
-	$(CC) -c $< -o $@ $(CFLAGS)
+	$(CC) -c $< -o $@ $(CPARAM)
 
 $(EXEC): $(OBJ) | $(SAVEDIR)
-	$(CC) $^ -o $@ $(CFLAGS)
+	$(CC) $^ -o $@ $(CPARAM)
 
 # Clean
 
