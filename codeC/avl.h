@@ -38,7 +38,7 @@ int existeFilsDroit(AVL* a);
 int ajouterFilsGauche(AVL* a, int e);
 int ajouterFilsDroit(AVL* a, int e);
 AVL* rechercheAVL(AVL* a, int elmt);
-AVL* exporter(AVL* a, FILE* fichierSortie);
+void exporter(AVL* a, FILE* fichierSortie);
 AVL* rotGauche(AVL* a);
 AVL* rotDroite(AVL* a);
 AVL* doubleRotationGauche(AVL* a);

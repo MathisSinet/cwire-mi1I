@@ -3,7 +3,7 @@ set output 'graphs/graph.png' # chemin de sortie
 
 set style data histogram # type de données
 set style fill solid # remplir les barres
-set datafile separator '_' # séparateur du fichier d'entrée
+set datafile separator ':' # séparateur du fichier d'entrée
 
 set title "lv all minmax" # titre du graphique
 set boxwidth 0.9 # largeur des barres

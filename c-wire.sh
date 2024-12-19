@@ -114,6 +114,7 @@ temps_debut=`date +%s.%N`
 
 chemin_sortie=""
 chemin_sortie_minmax=""
+tete_sortie=""
 nblignes=0
 
 if (($id_centrale != -1)) # cas du traitement pour une centrale spécifique
@@ -125,23 +126,28 @@ then
     then
         grep -E "^$4;[0-9]+;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+        tete_sortie="Station_HV-B:Capacité:Consommation(entreprises)"
     elif (($type_station == 1)) # hva
     then
         grep -E "^$4;[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+        tete_sortie="Station_HV-A:Capacité:Consommation(entreprises)"
     else # lv
         case $3 in
             'all')
                 grep -E "^$4;-;[0-9-]+;[0-9]+;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+                tete_sortie="Poste_LV:Capacité:Consommation(tous)"
                 ;;
             'comp')
                 grep -E "^$4;-;[0-9-]+;[0-9]+;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+                tete_sortie="Poste_LV:Capacité:Consommation(entreprises)"
                 ;;
             'indiv')
                 grep -E "^$4;-;[0-9-]+;[0-9]+;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+                tete_sortie="Poste_LV:Capacité:Consommation(particuliers)"
                 ;;
         esac
     fi
@@ -156,23 +162,28 @@ then
     then
         grep -E "^[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f2,7,8 | tr '-' '0' | cat > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+        tete_sortie="Station_HV-B:Capacité:Consommation(entreprises)"
     elif (($type_station == 1)) # hva
     then
         grep -E "^[0-9-]+;[0-9-]+;[0-9]+;-" $chemin_entree | cut -d';' -f3,7,8 | tr '-' '0' | cat > tmp/input.csv
         nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+        tete_sortie="Station_HV-A:Capacité:Consommation(entreprises)"
     else # lv
         case $3 in
             'all')
                 grep -E "^[0-9]+;-;[0-9-]+;[0-9]" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' | cat > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+                tete_sortie="Poste_LV:Capacité:Consommation(tous)"
                 ;;
             'comp')
                 grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' | cat > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+                tete_sortie="Poste_LV:Capacité:Consommation(entreprises)"
                 ;;
             'indiv')
                 grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+" $chemin_entree | cut -d';' -f4,7,8 | tr '-' '0' | cat > tmp/input.csv
                 nblignes=`wc -l tmp/input.csv | cut -f1 -d' '`
+                tete_sortie="Poste_LV:Capacité:Consommation(particuliers)"
                 ;;
         esac
     fi
@@ -198,16 +209,16 @@ fi
 #echo "Temps d'exécution : $temps_tot"
 
 # Tri des données
-
-cut -d_ -f1,2,3 "tmp/output.csv" | sort -k2 -t_ -n -o $chemin_sortie
+echo $tete_sortie > $chemin_sortie
+cut -d: -f1,2,3 "tmp/output.csv" | sort -k2 -t: -n >> $chemin_sortie
 if (($type_conso == 0))
 then
     nbstations=`wc -l tmp/output.csv | cut -f1 -d' '`
     if (($nbstations >= 20))
     then
-        sort "tmp/output.csv" -k4 -t_ -n | tee | { head -n10 ; tail -n10 ; } | cut -d_ -f1,2,3 > $chemin_sortie_minmax
+        sort "tmp/output.csv" -k4 -t: -n | tee | { head -n10 ; tail -n10 ; } | cut -d: -f1,2,3 > $chemin_sortie_minmax
     else
-        sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > $chemin_sortie_minmax
+        sort "tmp/output.csv" -k4 -t: -n | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     fi
     if [ -f plot_script ]; then
         gnuplot -e "data='$chemin_sortie_minmax'" plot_script 
@@ -220,6 +231,6 @@ then
 fi
 
 temps_fin=`date +%s.%N`
-temps_tot=`echo $temps_fin-$temps_debut | bc`
+temps_tot=`echo $temps_fin-$temps_debut | bc | sed 's/....$//'`
 
-echo "Temps d'exécution : $temps_tot"
+echo "Temps d'exécution : $temps_tot secondes"

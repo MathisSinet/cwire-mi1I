@@ -32,7 +32,7 @@ int estVide(AVL* a)
 
 int estFeuille(AVL* a)
 {
-    return estVide(a) || estVide(a->fg) && estVide(a->fd);
+    return estVide(a) || (estVide(a->fg) && estVide(a->fd));
 }
 
 int id(AVL* a)
@@ -90,12 +90,12 @@ AVL* rechercheAVL(AVL* a, int elmt)
     }
 }
 
-AVL* exporter(AVL* a, FILE* fichierSortie) 
+void exporter(AVL* a, FILE* fichierSortie) 
 {
     if (!estVide(a))
     {
         exporter(a->fg, fichierSortie);
-        fprintf(fichierSortie, "%d_%ld_%ld_%ld\n", a->station.id, a->station.capacity, a->station.load, a->station.capacity-a->station.load);
+        fprintf(fichierSortie, "%d:%ld:%ld:%ld\n", a->station.id, a->station.capacity, a->station.load, a->station.capacity-a->station.load);
         exporter(a->fd, fichierSortie);
     }
 }
