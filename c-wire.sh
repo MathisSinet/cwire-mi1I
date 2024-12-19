@@ -202,17 +202,20 @@ fi
 cut -d_ -f1,2,3 "tmp/output.csv" | sort -k2 -t_ -n -o $chemin_sortie
 if (($type_conso == 0))
 then
-    if (($nblignes >= 20))
+    nbstations=`wc -l tmp/output.csv | cut -f1 -d' '`
+    if (($nbstations >= 20))
     then
         sort "tmp/output.csv" -k4 -t_ -n | tee | { head -n10 ; tail -n10 ; } | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     else
         sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     fi
     if [ -f plot_script ]; then
-        gnuplot -c plot_script
+        gnuplot -e "data='$chemin_sortie_minmax'" plot_script 
         if (( $? != 0 )); then
             echo "Errur lors de la génération du graphique"
         fi
+    else
+        echo "Script de génération du graphique introuvable"
     fi
 fi
 
