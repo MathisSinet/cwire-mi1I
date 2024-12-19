@@ -208,6 +208,12 @@ then
     else
         sort "tmp/output.csv" -k4 -t_ -n | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     fi
+    if [ -f plot_script ]; then
+        gnuplot -c plot_script
+        if (( $? != 0 )); then
+            echo "Errur lors de la génération du graphique"
+        fi
+    fi
 fi
 
 temps_fin=`date +%s.%N`
