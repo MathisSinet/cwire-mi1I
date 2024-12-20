@@ -1,2 +1,12 @@
-Aide pour C-Wire
-À faire
+==C-WIRE==
+
+Utilisation : c-wire.sh [chemin du fichier de données] [type de station] [type de consommateur] [identifiant centrale (optionnel)]
+Option -h : Affiche cette aide
+
+Ce programme permet de résumer la capacité des stations d'un réseau électrique avec la somme de leur consommateurs directs.
+Les paramètres possibles pour le type de station et le type de consommateur sont :
+- hvb comp (stations HV-B, consommateurs : entreprises)
+- hva comp (stations HV-A, consommateurs : entreprises)
+- lv all (postes LV, consommateurs : tous)
+- lv comp (postes LV, consommateurs : entreprises)
+- lv indiv (postes LV, consommateurs : particuliers)

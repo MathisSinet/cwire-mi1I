@@ -83,6 +83,7 @@ fi
 # Vérifier compliation
 if [ ! -f $PROG ]
 then
+    echo "Compliation du programme..."
     cd codeC
     make
     if (($? != 0)); then
@@ -90,6 +91,7 @@ then
         erreur 7
     fi
     cd ..
+    echo "Compilation terminée"
 fi
 
 # Vérification du dossier tmp
