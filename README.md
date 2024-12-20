@@ -1,6 +1,17 @@
 # cwire-mi1I
 
-Projet info groupe MI1-I
+Projet d'informatique pour le semestre 1 de Pré Ing 2.
 
-exécuter la commande suivante: bash ./c-wire.sh nom_fichier.csv nom_station
-cela devrait créer un fichier .csv avec les informations demandées.
+## Auteurs
+
+- Kentaro L.
+- Mathis S.
+- Nourhene M.
+
+## Utilisation
+
+```c-wire.sh [Chemin des données] [Type de station] [Type de consommateur] [Identifiant de station (Optionnel)]```
+
+Utiliser `c-wire.sh -h` pour plus d'informations.
+
+Les temps d'exécution peuvent varier selon la machine utilisée.
