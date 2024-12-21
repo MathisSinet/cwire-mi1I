@@ -1,4 +1,4 @@
-==C-WIRE==
+====C-WIRE====
 
 Utilisation : c-wire.sh [chemin du fichier de données] [type de station] [type de consommateur] [identifiant centrale (optionnel)]
 Option -h : Affiche cette aide
@@ -11,4 +11,8 @@ Les paramètres possibles pour le type de station et le type de consommateur son
 - lv comp (postes LV, consommateurs : entreprises)
 - lv indiv (postes LV, consommateurs : particuliers)
 
-Les résultats sont stockés dans le dossier tests
+Les résultats sont stockés dans le dossier tests.
+Un fichier CSV est généré avec l'identifiant de station, sa capacité et la somme des consommations.
+Ce fichier est trié par capacité croissante.
+Dans le cas du traitement lv all, un fichier supplémentaire est généré avec les 10 stations ayant le plus de marge de production et les 10 ayant le moins.
+Un graphique est également généré avec la représentation de la capacité et la consommation de ces 20 stations.
