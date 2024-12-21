@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <string.h>
 
 // Macros pour fonctions minimum et maximum
 #define min(a,b) ((a) < (b) ? (a) : (b))
@@ -36,12 +34,7 @@ AVL;
 Station creerStation(int id);
 AVL* creerAVL(int r);
 int estVide(AVL* a);
-int estFeuille(AVL* a);
 int id(AVL* a);
-int existeFilsGauche(AVL* a);
-int existeFilsDroit(AVL* a);
-int ajouterFilsGauche(AVL* a, int e);
-int ajouterFilsDroit(AVL* a, int e);
 AVL* rechercheAVL(AVL* a, int elmt);
 void exporter(AVL* a, FILE* fichierSortie);
 AVL* rotGauche(AVL* a);

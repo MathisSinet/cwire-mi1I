@@ -33,50 +33,10 @@ int estVide(AVL* a)
     return a == NULL;
 }
 
-// Renvoie 1 si le noeud est une feuille
-int estFeuille(AVL* a)
-{
-    return estVide(a) || (estVide(a->fg) && estVide(a->fd));
-}
-
 // Renvoie l'identifiant de la station
 int id(AVL* a)
 {
     return estVide(a) ? 0 : a->station.id;
-}
-
-// Vérifie si le fils gauche existe
-int existeFilsGauche(AVL* a)
-{
-    return !estVide(a) && !estVide(a->fg);
-}
-
-// Vérifie si le fils droit existe
-int existeFilsDroit(AVL* a)
-{
-    return !estVide(a) && !estVide(a->fd);
-}
-
-// Ajoute un fils gauche au noeud
-int ajouterFilsGauche(AVL* a, int e)
-{
-    if (estVide(a))
-    {
-        return 0; // échec si le noeud est vide
-    }
-    a->fg = creerAVL(e);
-    return 1; //Succès
-}
-
-// Ajoute un fils droit au noeud
-int ajouterFilsDroit(AVL* a, int e)
-{
-    if (estVide(a))
-    {
-        return 0; // échec si le noeud est vide
-    }
-    a->fd = creerAVL(e);
-    return 1; //Succès
 }
 
 // Cherche un noeud par identifiant de station, le renvoie si trouvé, sinon NULL
