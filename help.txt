@@ -10,3 +10,5 @@ Les paramètres possibles pour le type de station et le type de consommateur son
 - lv all (postes LV, consommateurs : tous)
 - lv comp (postes LV, consommateurs : entreprises)
 - lv indiv (postes LV, consommateurs : particuliers)
+
+Les résultats sont stockés dans le dossier tests

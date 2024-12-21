@@ -211,6 +211,7 @@ fi
 # Tri des données en sortie du programme C
 echo $tete_sortie > $chemin_sortie # écriture de l'en-tête
 cut -d: -f1,2,3 "tmp/output.csv" | sort -k2 -t: -n >> $chemin_sortie # tri par capacité
+echo "Fichier $chemin_sortie généré"
 
 # Traitement lv_all_minmax
 if (($type_conso == 0))
@@ -223,11 +224,14 @@ then
     else
         sort "tmp/output.csv" -k4 -t: -n | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     fi
+    echo "Fichier $chemin_sortie_minmax généré"
     # Création du graphique de consommation des stations extrémales
     if [ -f plot_script ]; then
         gnuplot -e "data='$chemin_sortie_minmax'" plot_script 
         if (( $? != 0 )); then
             echo "Errur lors de la génération du graphique"
+        else
+            echo "Graphique généré dans graphs/graph.png"
         fi
     else
         echo "Script de génération du graphique introuvable"
@@ -237,6 +241,8 @@ fi
 # Calcul du temps d'exécution
 temps_fin=`date +%s.%N`
 temps_tot=`echo $temps_fin-$temps_debut | bc | sed 's/....$//'`
+
+echo "Le programme s'est terminé avec succès"
 
 # Affichage du temps d'exécution
 echo "Temps d'exécution : $temps_tot secondes"
