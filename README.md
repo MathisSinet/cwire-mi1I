@@ -10,8 +10,10 @@ Projet d'informatique pour le semestre 1 de Pré Ing 2.
 
 ## Utilisation
 
-```c-wire.sh [Chemin des données] [Type de station] [Type de consommateur] [Identifiant de station (Optionnel)]```
+Dans le répertoire du projet :
 
-Utiliser `c-wire.sh -h` pour plus d'informations.
+```./c-wire.sh [Chemin des données] [Type de station] [Type de consommateur] [Identifiant de station (Optionnel)]```
+
+Utiliser `./c-wire.sh -h` pour plus d'informations.
 
 Les temps d'exécution peuvent varier selon la machine utilisée.

@@ -80,7 +80,7 @@ if (($# >= 4))
 then id_centrale=$4
 fi
 
-# Vérifier compliation
+# Vérification de la compliation
 if [ ! -f $PROG ]
 then
     echo "Compliation du programme..."
@@ -105,21 +105,25 @@ if [ ! -d graphs ]
 then mkdir graphs
 fi
 
-# Vérification du dossier graphs
+# Vérification du dossier tests
 if [ ! -d tests ]
 then mkdir tests
 fi
 
+# Initialisation du temps d'exécution
 temps_debut=`date +%s.%N`
 
-# Filtrage des données avec awk et obtention du chemin sortie
+# Filtrage des données avec grep et obtention du chemin sortie
 
-chemin_sortie=""
-chemin_sortie_minmax=""
-tete_sortie=""
-nblignes=0
+chemin_sortie="" # chemin de sortie final
+chemin_sortie_minmax="" # chemin de sortie pour le traitement lv_all_minmax
+tete_sortie="" # en-tête du fichier CSV de sortie
+nblignes=0 # nombre de lignes du fichier temporaire envoyé au programme C
 
-if (($id_centrale != -1)) # cas du traitement pour une centrale spécifique
+
+# Traitement pour une centrale spécifique
+# Envoi des données de type (station;capacité;consommation) dans tmp/input.csv
+if (($id_centrale != -1)) 
 then
     chemin_sortie="tests/${2}_${3}_${4}.csv"
     chemin_sortie_minmax="tests/lv_all_minmax_${4}.csv"
@@ -155,7 +159,9 @@ then
     fi
 fi
 
-if (($id_centrale == -1)) # cas du traitement pour toutes les stations
+# Traitement pour toutes les centrales
+# Envoi des données de type (station;capacité;consommation) dans tmp/input.csv
+if (($id_centrale == -1))
 then
     chemin_sortie="tests/${2}_${3}.csv"
     chemin_sortie_minmax="tests/lv_all_minmax.csv"
@@ -193,28 +199,23 @@ fi
 
 # Exécution du pprogramme
 
-#temps_fin=`date +%s.%N`
-#temps_tot=`echo $temps_fin-$temps_debut | bc`
-
-#echo "Temps d'exécution : $temps_tot"
-
 $PROG $nblignes < tmp/input.csv | cat > tmp/output.csv
+# Sortie : (station;capacité;consommation;capacité-consommation)
 
+# Vérification que le programme C s'est bien déroulé
 if (($? != 0)); then
     echo "Erreur lors de l'exécution du programme C : erreur $?"
     erreur 15
 fi
 
-#temps_fin=`date +%s.%N`
-#temps_tot=`echo $temps_fin-$temps_debut | bc`
+# Tri des données en sortie du programme C
+echo $tete_sortie > $chemin_sortie # écriture de l'en-tête
+cut -d: -f1,2,3 "tmp/output.csv" | sort -k2 -t: -n >> $chemin_sortie # tri par capacité
 
-#echo "Temps d'exécution : $temps_tot"
-
-# Tri des données
-echo $tete_sortie > $chemin_sortie
-cut -d: -f1,2,3 "tmp/output.csv" | sort -k2 -t: -n >> $chemin_sortie
+# Traitement lv_all_minmax
 if (($type_conso == 0))
 then
+    # Création du fichier lv_all_minmax.csv
     nbstations=`wc -l tmp/output.csv | cut -f1 -d' '`
     if (($nbstations >= 20))
     then
@@ -222,6 +223,7 @@ then
     else
         sort "tmp/output.csv" -k4 -t: -n | cut -d_ -f1,2,3 > $chemin_sortie_minmax
     fi
+    # Création du graphique de consommation des stations extrémales
     if [ -f plot_script ]; then
         gnuplot -e "data='$chemin_sortie_minmax'" plot_script 
         if (( $? != 0 )); then
@@ -232,7 +234,9 @@ then
     fi
 fi
 
+# Calcul du temps d'exécution
 temps_fin=`date +%s.%N`
 temps_tot=`echo $temps_fin-$temps_debut | bc | sed 's/....$//'`
 
+# Affichage du temps d'exécution
 echo "Temps d'exécution : $temps_tot secondes"

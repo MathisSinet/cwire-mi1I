@@ -1,11 +1,8 @@
 *.dat
 tmp
-tests
 graphs
 build
 input
 codeC/prog
 .vscode
 *.o
-*.csv
-*test*
