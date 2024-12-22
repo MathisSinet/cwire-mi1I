@@ -16,7 +16,7 @@ AVL* creerAVL(int id)
 
     if (nouv == NULL)
     {
-        exit(1); // Si l'allocation échoue, le programme s'arrête
+        exit(10); // Si l'allocation échoue, le programme s'arrête
     }
 
     nouv->station = creerStation(id); // Créer une station et l'associer au noeud

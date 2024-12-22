@@ -5,6 +5,8 @@ PROG="codeC/prog"
 # Fonction d'erreur
 erreur()
 {
+    echo "Affichage de l'aide"
+    echo
     cat help.txt
     exit $1
 }
@@ -199,12 +201,19 @@ fi
 
 # Exécution du pprogramme
 
-$PROG $nblignes < tmp/input.csv | cat > tmp/output.csv
+if (($nblignes == 0))
+then
+    echo "Aucune donnée ne correspond aux critères sélectionnés"
+    erreur 8
+fi
+
+$PROG $nblignes < tmp/input.csv > tmp/output.csv
 # Sortie : (station;capacité;consommation;capacité-consommation)
 
 # Vérification que le programme C s'est bien déroulé
-if (($? != 0)); then
-    echo "Erreur lors de l'exécution du programme C : erreur $?"
+erreur_c=$?
+if ((erreur_c != 0)); then
+    echo "Erreur lors de l'exécution du programme C : erreur $erreur_c"
     erreur 15
 fi
 

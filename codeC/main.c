@@ -10,7 +10,7 @@ int main (int argc, char* argv[]) {
     if (nbLignes <= 0)
     {
         // Si le nombre de lignes est incorrect, affiche un message d'erreur et termine le programme
-        printf("Nombre de lignes du fichier d'entree incorrect\n");
+        perror("Nombre de lignes du fichier d'entree incorrect. Pas de donnees ?\n");
         exit(1);
     }
 
